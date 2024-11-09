@@ -43,11 +43,15 @@ for fname in images:
         cv.imwrite(filename, img)
 
 # cv.destroyAllWindows()
-# distortion coefficients
+# camera matrix, distortion coefficients, rotation and translation vectors
 ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+print(ret, mtx, dist, rvecs, tvecs, sep='\n')
 img = cv.imread('left12.jpg')
 h,  w = img.shape[:2]
+print("Image shape:",img.shape)
+# region of interest
 newcameramtx, roi = cv.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
+print(f"New camera matrix:\n{newcameramtx}")
 
 # undistort
 dst = cv.undistort(img, mtx, dist, None, newcameramtx)
@@ -57,7 +61,7 @@ x, y, w, h = roi
 dst = dst[y:y+h, x:x+w]
 cv.imwrite('calibresult12.png', dst)
 
-img = cv.imread('left08.jpg')
+img = cv.imread('left13.jpg')
 h,  w = img.shape[:2]
 newcameramtx, roi = cv.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
 # undistort
