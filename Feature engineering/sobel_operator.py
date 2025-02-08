@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 # Load an image
 filepath = "D:\\Computer Vision\\Feature engineering\\20241117_165731.jpg"
 # filepath = "D:\\Computer Vision\\Feature engineering\\left05.jpg"
+# filepath = "D:\\Computer Vision\\Feature engineering\\lisa.jpg"
 image = cv2.imread(filepath)
 
 # Convert the image from BGR to Grayscale
@@ -45,12 +46,21 @@ for ridx in range(1, num_of_rows-1):
         pre_processed_img[ridx][cidx] = (0.8*gray_image[ridx][cidx] + (0.025*gray_image[ridx-1][cidx-1] + 0.025*gray_image[ridx-1][cidx] + 0.025*gray_image[ridx-1][cidx+1] +
                                                                        0.025*gray_image[ridx+1][cidx-1] + 0.025*gray_image[ridx+1][cidx] + 0.025*gray_image[ridx+1][cidx+1] +
                                                                        0.025*gray_image[ridx][cidx-1] + 0.025*gray_image[ridx][cidx+1]))/9
-        
+
+pre_processed = np.array(pre_processed_img)        
+cv2.imwrite(r"D:\\Computer Vision\\Feature engineering\\preprocessedimage.jpg",pre_processed)
+
 for ridx in range(1, num_of_rows-1):
-    for cidx in range(1, num_of_cols-1):        
-        Gx = np.matmul(kx, np.array([pre_processed_img[ridx][cidx-1], pre_processed_img[ridx][cidx], pre_processed_img[ridx][cidx+1]]))
-        Gy = np.matmul(ky, np.array([pre_processed_img[ridx-1][cidx], pre_processed_img[ridx][cidx], pre_processed_img[ridx+1][cidx]]))
-        G = np.sqrt(np.matmul(Gx, Gx.T) + np.matmul(Gy, Gy.T))
+    for cidx in range(1, num_of_cols-1):
+        mat = np.array([[pre_processed_img[ridx-1][cidx-1], pre_processed_img[ridx-1][cidx], pre_processed_img[ridx-1][cidx+1]],
+                        [pre_processed_img[ridx+1][cidx-1],pre_processed_img[ridx+1][cidx],pre_processed_img[ridx+1][cidx+1]],
+                        [pre_processed_img[ridx][cidx-1],pre_processed_img[ridx][cidx+1],pre_processed_img[ridx][cidx]]])
+        # Gx = np.matmul(kx, np.array([pre_processed_img[ridx][cidx-1], pre_processed_img[ridx][cidx], pre_processed_img[ridx][cidx+1]]))
+        # Gy = np.matmul(ky, np.array([pre_processed_img[ridx-1][cidx], pre_processed_img[ridx][cidx], pre_processed_img[ridx+1][cidx]]))
+        # G = np.sqrt(np.matmul(Gx, Gx.T) + np.matmul(Gy, Gy.T))
+        Gx = np.sum(np.multiply(kx, mat))
+        Gy = np.sum(np.multiply(ky, mat))
+        G = np.sqrt(Gx*Gx + Gy*Gy)
   
         pixelwise_gradient[ridx][cidx] = G
 
@@ -60,7 +70,10 @@ for ridx in range(1, num_of_rows-1):
         #if curr_pixel < pixelwise_gradient[ridx-1][cidx-1] or curr_pixel < pixelwise_gradient[ridx-1][cidx] or curr_pixel < pixelwise_gradient[ridx-1][cidx+1] or curr_pixel < pixelwise_gradient[ridx][cidx-1] or curr_pixel < pixelwise_gradient[ridx][cidx+1] or curr_pixel < pixelwise_gradient[ridx+1][cidx-1] or curr_pixel < pixelwise_gradient[ridx+1][cidx] or curr_pixel < pixelwise_gradient[ridx+1][cidx+1]:
         #    edge_detected_img[ridx][cidx] = 255
         
-        if 8.5*pixelwise_gradient[ridx][cidx] < (pixelwise_gradient[ridx-1][cidx-1] + pixelwise_gradient[ridx-1][cidx] + pixelwise_gradient[ridx-1][cidx+1] + pixelwise_gradient[ridx][cidx-1] + pixelwise_gradient[ridx][cidx+1] + pixelwise_gradient[ridx+1][cidx-1] + pixelwise_gradient[ridx+1][cidx] + pixelwise_gradient[ridx+1][cidx+1]):
+        # if 15*pixelwise_gradient[ridx][cidx] < (pixelwise_gradient[ridx-1][cidx-1] + pixelwise_gradient[ridx-1][cidx] + pixelwise_gradient[ridx-1][cidx+1] + pixelwise_gradient[ridx][cidx-1] + pixelwise_gradient[ridx][cidx+1] + pixelwise_gradient[ridx+1][cidx-1] + pixelwise_gradient[ridx+1][cidx] + pixelwise_gradient[ridx+1][cidx+1]):
+        #     edge_detected_img[ridx][cidx] = 255
+
+        if pixelwise_gradient[ridx][cidx] > 50:
             edge_detected_img[ridx][cidx] = 255
             
 # Display the grayscale image
