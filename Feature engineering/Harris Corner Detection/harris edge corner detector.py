@@ -47,8 +47,6 @@ for ridx in range(1, num_of_rows-1):
 pre_processed = np.array(pre_processed_img)        
 cv2.imwrite(r"D:\\Computer Vision\\Feature engineering\\preprocessedimage.jpg",pre_processed)
 
-M = np.zeros((2,2))
-
 for ridx in range(1, num_of_rows-1):
     for cidx in range(1, num_of_cols-1):
         mat = np.array([[pre_processed_img[ridx-1][cidx-1], pre_processed_img[ridx-1][cidx], pre_processed_img[ridx-1][cidx+1]],
